@@ -1,0 +1,38 @@
+
+const http = require('http');
+
+// Request handler
+http
+  .createServer((request, response) => {
+    const { headers, method, url } = request;
+
+    let body = [];
+    request
+      .on('error', err => {
+        console.error(err);
+      })
+      .on('data', chunk => {
+        body.push(chunk);
+      })
+      .on('end', () => {
+        body = Buffer.concat(body).toString();
+
+        response.on('error', err => {
+          console.log(err);
+        });
+
+        // Response handler
+        // response.statusCode = 200; // OK
+        // response.setHeader('Content-Type', 'application/json');
+
+        response.writeHead(200, { 'Content-Type': 'application/json' });
+
+        const responseBody = { headers, method, url, body };
+
+        // response.write(JSON.stringify(responseBody));
+        // response.end();
+
+        response.end(JSON.stringify(responseBody));
+      });
+  })
+  .listen(8080, () => console.log('Running on localhost'));
